@@ -45,7 +45,12 @@ class CarDetector:
                 imgThreshold = cv2.adaptiveThreshold(imgBlur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                                      cv2.THRESH_BINARY_INV, 25, 16)
                 crop = cropToPoly(imgThreshold, cords)
-                cv2.imshow("crop"+str(i),crop)
+                imgMedian = cv2.medianBlur(crop,5)
+                kernel = np.ones((3,3),np.uint8)
+                imgDilate = cv2.dilate(imgMedian,kernel,iterations=1)
+                count = cv2.countNonZero(imgDilate)
+                cv2.imshow("crop"+str(i)+str(count),imgDilate)
+
         #cv2.polylines(snapshot, [(10, 20), (20, 30), (40, 50)], True, (255, 0, 0), 2)
         cv2.imshow("parking slots",snapshot)
         cv2.waitKey(0)
