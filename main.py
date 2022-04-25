@@ -38,10 +38,10 @@ def main():
         image = cam.get_current_frame()
         cropped_image = img[422:422 + 600, 327:327 + 1000]
         show_snap(cropped_image)
-        curr_is_free =car_detector.is_parking_free(cropped_image)
-        if(curr_is_free!=is_free):
+        curr_is_free = car_detector.is_parking_free(cropped_image)
+        if(curr_is_free!=is_free): # only if there was a change is the state of the parking
             msg = 'parking is {}free'.format('' if curr_is_free else 'not ')
-            bot.send_photo(image,msg,group_id)
+            bot.send_photo(image, msg, group_id)
 
 
 if __name__ == "__main__":
