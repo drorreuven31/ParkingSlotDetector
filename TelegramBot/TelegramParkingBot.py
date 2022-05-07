@@ -1,5 +1,6 @@
 import os
 import logging
+import cv2
 from telegram.ext import Updater ,CommandHandler
 from telegram import Update
 from telegram.ext import CallbackContext
@@ -16,25 +17,32 @@ class TelegramParkingBot:
         self.CreateHandlers()
         self.updater.start_polling()
 
-    def CreateHandlers(self):
-
-        def start(update: Update, context: CallbackContext):
-            context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
-
-        def current_pic(update: Update, context: CallbackContext):
-            snapshot = self.ipo_cam.get_current_frame()
-            context.bot.send_photo(chat_id=update.effective_chat.id,photo =snapshot , caption ="Parking Now!")
-
-        start_handler = CommandHandler('start', start)
-        pic_handler = CommandHandler('pic', current_pic)
-        self.dispatcher.add_handler(start_handler)
-        self.dispatcher.add_handler(pic_handler)
-
-
     def send_message(self,msg,chat_id):
-        self.dispatcher.bot.send_message(chat_id=chat_id, text=msg)
+        try:
+            self.dispatcher.bot.send_message(chat_id=chat_id, text=msg)
+        except:
+            print("crashed")
 
     def send_photo(self,pic,msg,chat_id):
-        self.dispatcher.bot.send_photo(chat_id=chat_id, photo=pic,caption=msg)
+        bytes_pic = cv2.imencode('.jpg', pic)[1].tobytes()
+        try:
+            self.dispatcher.bot.send_photo(chat_id=chat_id, photo=bytes_pic,caption=msg)
+        except:
+            print("crashed")
 
+    def start(update: Update, context: CallbackContext):
+        context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
+    def current_pic(self ,update: Update, context: CallbackContext):
+        snapshot = self.ip_cam.get_current_frame()
+        bytes_pic = cv2.imencode('.jpg', snapshot)[1].tobytes()
+        try:
+            context.bot.send_photo(chat_id=update.effective_chat.id, photo=bytes_pic, caption="Parking Now!")
+        except:
+            print("crashed")
+
+    def CreateHandlers(self):
+      start_handler = CommandHandler('start', self.start)
+      pic_handler = CommandHandler('pic', self.current_pic)
+      self.dispatcher.add_handler(start_handler)
+      self.dispatcher.add_handler(pic_handler)

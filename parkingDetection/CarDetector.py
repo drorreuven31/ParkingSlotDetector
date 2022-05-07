@@ -3,11 +3,6 @@ import pickle
 import numpy as np
 
 
-def rectContains(rect, pt):
-    logic = rect[0] < pt[0] < rect[0] + rect[2] and rect[1] < pt[1] < rect[1] + rect[3]
-    return logic
-
-
 def cropToPoly(img,pts):
     ## (1) Crop the bounding rect
     rect = cv2.boundingRect(pts)
@@ -45,16 +40,21 @@ class CarDetector:
                 imgThreshold = cv2.adaptiveThreshold(imgBlur,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                                      cv2.THRESH_BINARY_INV, 25, 16)
                 crop = cropToPoly(imgThreshold, cords)
+                img_crop = cropToPoly(snapshot, cords)
                 imgMedian = cv2.medianBlur(crop,5)
                 kernel = np.ones((3,3),np.uint8)
-                imgDilate = cv2.dilate(imgMedian,kernel,iterations=1)
+                imgDilate = cv2.dilate(crop,kernel,iterations=1)
                 count = cv2.countNonZero(imgDilate)
-                cv2.imshow("crop"+str(i)+str(count),imgDilate)
+                cv2.imshow("tresh"+str(i)+": "+str(count),imgDilate)
+                cv2.imshow("img",img_crop)
 
-        #cv2.polylines(snapshot, [(10, 20), (20, 30), (40, 50)], True, (255, 0, 0), 2)
-        cv2.imshow("parking slots",snapshot)
-        cv2.waitKey(0)
-        return 1
+                cv2.waitKey(5000)
+                cv2.destroyAllWindows()
+
+                if(count<2000):
+                    return True
+
+        return False
 
 
 

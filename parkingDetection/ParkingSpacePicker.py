@@ -1,8 +1,13 @@
 import cv2
 import numpy as np
 import pickle
+from Webcam import Webcam
+url_rtsp = 'rtsp://dror:1234@192.168.1.16:8554/live'
 
-img = cv2.imread('pic.jpg')
+
+cam = Webcam(url_rtsp)
+img = cam.get_current_frame()
+
 img = img[422:422 + 600, 327:327 + 1000]
 
 parkingCords = []

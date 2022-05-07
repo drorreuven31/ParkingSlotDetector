@@ -22,4 +22,5 @@ class Webcam:
 
     # get the current frame
     def get_current_frame(self):
-        return self.current_frame
+        rotate = cv2.rotate(self.current_frame,cv2.ROTATE_90_CLOCKWISE)
+        return rotate
